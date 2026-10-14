@@ -1,0 +1,79 @@
+Devclaim:
+  NeosStyleguide:
+    Adapter:
+      CPX:
+        # the name of the adapter in the interface
+        name: 'CPX'
+
+        # the packages whose components are in the styleguide: a <Component>.styleguide.yaml next to the component
+        # (Components/**); empty: every package with a Components folder
+        packages: {}
+
+        # the levels of the navigation. An entry is on the level of "level" in its YAML file, else on the first level
+        # whose "match" (a regular expression) matches its "group" or its path below Components ("Block/Button/Button");
+        # entries without a level are under "Weitere"
+        levels:
+          atoms:
+            label: 'Atome'
+            position: 200
+            match: 'Atom'
+          molecules:
+            label: 'Moleküle'
+            position: 300
+            match: 'Molecule'
+          organisms:
+            label: 'Organismen'
+            position: 400
+            match: 'Organism'
+          templates:
+            label: 'Vorlagen'
+            position: 500
+            match: 'Template'
+
+        # the viewports of the preview
+        viewports:
+          sm:
+            label: 'Mobile (360)'
+            width: 360
+            height: 740
+          md:
+            label: 'Tablet (768)'
+            width: 768
+            height: 1024
+          lg:
+            label: 'Laptop (1024)'
+            width: 1024
+            height: 768
+          xl:
+            label: 'Desktop (1280)'
+            width: 1280
+            height: 800
+          2xl:
+            label: 'Wide (1920)'
+            width: 1920
+            height: 1080
+
+        preview:
+          # the stylesheets and scripts of the website, in the <head> of the preview (resource paths)
+          stylesheets: {}
+          scripts: {}
+          # the page grid, drawn while the styleguide asks for it (data-styleguide-grid on <html>): one entry per
+          # media query, e.g. {mediaQuery: '(min-width:1280px)', columns: 12, gap: 64px, gutter: '0 64px', maxWidth: 1920px}
+          grid: {}
+
+Neos:
+  Flow:
+    mvc:
+      routes:
+        'Devclaim.NeosStyleguide.Adapter.CPX':
+          position: 'before Neos.Neos'
+    security:
+      authentication:
+        providers:
+          'Neos.Neos:Backend':
+            requestPatterns:
+              # the adapter reads the sites in the editor's workspace with the Neos backend session
+              'Devclaim.NeosStyleguide.Adapter.CPX:Controllers':
+                pattern: 'ControllerObjectName'
+                patternOptions:
+                  controllerObjectNamePattern: 'Devclaim\NeosStyleguide\Adapter\Cpx\Controller\.*'

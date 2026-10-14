@@ -1,0 +1,12 @@
+privilegeTargets:
+  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+    # the adapter API and the preview of the styleguide (AdapterController); without a backend session it answers 401
+    'Devclaim.NeosStyleguide.Adapter.CPX:Adapter':
+      matcher: 'method(Devclaim\NeosStyleguide\Adapter\Cpx\Controller\AdapterController->(?!initialize).*Action())'
+
+roles:
+  'Neos.Neos:AbstractEditor':
+    privileges:
+      -
+        privilegeTarget: 'Devclaim.NeosStyleguide.Adapter.CPX:Adapter'
+        permission: GRANT

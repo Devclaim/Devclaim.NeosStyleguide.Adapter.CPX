@@ -1,0 +1,22 @@
+{
+	"name": "devclaim/neos-styleguide-adapter-cpx",
+	"description": "CPX adapter of Devclaim.NeosStyleguide: the styleguide protocol for components of the PackageFactory component engine",
+	"type": "neos-package",
+	"license": "GPL-3.0-or-later",
+	"require": {
+		"devclaim/neos-styleguide": "*",
+		"packagefactory/component-engine": "*",
+		"neos/neos": "^9.2",
+		"symfony/yaml": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Devclaim\\NeosStyleguide\\Adapter\\Cpx\\": "Classes"
+		}
+	},
+	"extra": {
+		"neos": {
+			"package-key": "Devclaim.NeosStyleguide.Adapter.CPX"
+		}
+	}
+}

@@ -1,0 +1,54 @@
+# the adapter API of the styleguide protocol (Devclaim.NeosStyleguide PROTOCOL.md) and its preview
+-
+  name: 'Styleguide adapter: manifest'
+  uriPattern: 'neos/styleguide/api/v1/manifest'
+  defaults:
+    '@package': 'Devclaim.NeosStyleguide.Adapter.CPX'
+    '@controller': 'Adapter'
+    '@action': 'manifest'
+  httpMethods: ['GET']
+
+-
+  name: 'Styleguide adapter: entries'
+  uriPattern: 'neos/styleguide/api/v1/entries'
+  defaults:
+    '@package': 'Devclaim.NeosStyleguide.Adapter.CPX'
+    '@controller': 'Adapter'
+    '@action': 'entries'
+  httpMethods: ['GET']
+
+-
+  name: 'Styleguide adapter: entry'
+  uriPattern: 'neos/styleguide/api/v1/entries/{id}'
+  defaults:
+    '@package': 'Devclaim.NeosStyleguide.Adapter.CPX'
+    '@controller': 'Adapter'
+    '@action': 'entry'
+  httpMethods: ['GET']
+
+-
+  name: 'Styleguide adapter: tokens'
+  uriPattern: 'neos/styleguide/api/v1/tokens'
+  defaults:
+    '@package': 'Devclaim.NeosStyleguide.Adapter.CPX'
+    '@controller': 'Adapter'
+    '@action': 'tokens'
+  httpMethods: ['GET']
+
+-
+  name: 'Styleguide adapter: validate tokens'
+  uriPattern: 'neos/styleguide/api/v1/tokens/validate'
+  defaults:
+    '@package': 'Devclaim.NeosStyleguide.Adapter.CPX'
+    '@controller': 'Adapter'
+    '@action': 'validate'
+  httpMethods: ['POST']
+
+-
+  name: 'Styleguide adapter: preview'
+  uriPattern: 'neos/styleguide/preview'
+  defaults:
+    '@package': 'Devclaim.NeosStyleguide.Adapter.CPX'
+    '@controller': 'Adapter'
+    '@action': 'preview'
+  httpMethods: ['GET']
