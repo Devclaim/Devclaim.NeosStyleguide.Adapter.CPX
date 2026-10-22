@@ -60,6 +60,9 @@ Devclaim:
           # the page grid, drawn while the styleguide asks for it (data-styleguide-grid on <html>): one entry per
           # media query, e.g. {mediaQuery: '(min-width:1280px)', columns: 12, gap: 64px, gutter: '0 64px', maxWidth: 1920px}
           grid: {}
+          # true: the stylesheets show data-color-scheme="light" or "dark" on <html> (e.g. with light-dark()); the
+          # styleguide then has a switch for its previews
+          colorScheme: false
 
 Neos:
   Flow:

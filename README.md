@@ -5,8 +5,8 @@ Neos content module: it answers the styleguide protocol for components of the Pa
 inside Neos. The components describe themselves in a `<Component>.styleguide.yaml` next to them, in the format of
 Sitegeist.Monocle; the design tokens are the `@theme` blocks of the site's stylesheets (Tailwind).
 
-- the protocol under `/neos/styleguide/api/v1`: manifest, entries with their prop editors, tokens, validation of token
-    overrides
+- the protocol under `/neos/styleguide/api/v1`: manifest, entries with their prop editors, tokens (with their layers
+    and variants), validation of token overrides
 - the preview and the gallery under `/neos/styleguide/preview`, in the stylesheets and scripts of the website and the
     tokens of the selected site, with the page grid
 - for logged-in editors only (the Neos backend session), `401` without one
@@ -46,7 +46,35 @@ Devclaim:
           # the page grid (the format of Monocle's grids), one entry per media query
           grid:
             xl: { mediaQuery: '(min-width:1280px)', columns: 12, gap: 64px, gutter: '0 64px', maxWidth: 1920px }
+          # the stylesheets support data-color-scheme="light"/"dark" on <html>: a switch for the previews
+          colorScheme: false
 ```
+
+## Design and semantic tokens
+
+The styleguide reads the tokens from the comments of the stylesheets (core: `ThemeTokens`, `TokenLayers`):
+
+```css
+@theme {
+  /* Group: Colors - the palette */
+  --color-blue-70: #1f4fd1;
+
+  /* Group: Semantic colors (light) - the light value of every semantic color */
+  /* Subgroup: Surfaces */
+  --color-surface-light: var(--color-white);
+
+  /* Group: Semantic colors - the only colors components use */
+  --color-surface: light-dark(var(--color-surface-light), var(--color-surface-dark));
+}
+```
+
+- `Group: <label> - <description>` starts a group, `Subgroup: <label>` a part of it, the comment behind a token
+    describes it.
+- A group whose label starts with "Semantic" holds semantic tokens: the styleguide then shows "Semantic Tokens" and
+    "Design Tokens", and the editor of a semantic token offers the design tokens it may point at. Without semantic
+    groups it shows the tokens by group.
+- A semantic token named like another one plus `-light`/`-dark` or `-base`/`-md`/`-lg`/`-xl` is a value of it per color
+    scheme or width.
 
 The pages of the website apply the tokens a site saves: in the `<head>`, after the stylesheet,
 

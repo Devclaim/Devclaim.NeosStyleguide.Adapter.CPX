@@ -8,6 +8,7 @@ use Devclaim\NeosStyleguide\Adapter\Cpx\Catalogue\Catalogue;
 use Devclaim\NeosStyleguide\Adapter\Cpx\Catalogue\Entry;
 use Devclaim\NeosStyleguide\Adapter\Cpx\Rendering\ComponentFactory;
 use Devclaim\NeosStyleguide\Tokens\Theme;
+use Devclaim\NeosStyleguide\Tokens\TokenLayers;
 use Neos\Flow\Annotations as Flow;
 
 /**
@@ -24,6 +25,7 @@ class Protocol
         'colors' => 'Farben',
         'typography' => 'Schrift',
         'spacing' => 'Abstände und Größen',
+        'corners' => 'Ecken',
         'shadows' => 'Schatten',
         'ratios' => 'Formate',
         'grid' => 'Raster',
@@ -50,6 +52,10 @@ class Protocol
     #[Flow\InjectConfiguration(path: 'preview.grid', package: Catalogue::PACKAGE_KEY)]
     protected array $grid = [];
 
+    /** whether the stylesheets show data-color-scheme="light" or "dark" on <html> (the switch of the previews) */
+    #[Flow\InjectConfiguration(path: 'preview.colorScheme', package: Catalogue::PACKAGE_KEY)]
+    protected bool $colorScheme = false;
+
     /**
      * @return array<string,mixed>
      */
@@ -67,7 +73,7 @@ class Protocol
             'viewports' => $viewports,
             'preview' => $previewUri . '?entry={entry}&site={site}',
             'gallery' => $previewUri . '?entries={entries}&site={site}',
-            'features' => ['grid' => array_filter($this->grid) !== []],
+            'features' => ['grid' => array_filter($this->grid) !== [], 'colorScheme' => $this->colorScheme],
         ];
     }
 
@@ -109,11 +115,17 @@ class Protocol
     }
 
     /**
+     * The tokens with their groups; with semantic tokens in the theme also their layers and variants (TokenLayers)
+     *
      * @return array<string,mixed>
      */
     public function tokens(): array
     {
         $tokens = $this->theme->tokens();
+        $layers = TokenLayers::of(
+            $tokens->defaults,
+            fn (string $group) => $group !== '' ? self::slug($group) : '',
+        );
         $groups = [];
         $list = [];
         foreach ($tokens->defaults as $token) {
@@ -142,6 +154,8 @@ class Protocol
                 'type' => self::tokenType($token->name),
                 'description' => $token->description,
                 'editable' => $tokens->isEditable($token->name),
+                ...($token->subgroup !== '' ? ['subgroup' => $token->subgroup] : []),
+                ...($layers[$token->name] ?? []),
             ];
         }
         $used = array_unique(array_column($groups, 'kind'));
@@ -317,6 +331,9 @@ class Protocol
         }
         if ($any('/^--shadow-/')) {
             return 'shadows';
+        }
+        if ($any('/^--radius-/')) {
+            return 'corners';
         }
         if ($any('/^--aspect-/')) {
             return 'ratios';
