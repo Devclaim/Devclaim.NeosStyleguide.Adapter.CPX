@@ -59,7 +59,7 @@ class Protocol
     /**
      * @return array<string,mixed>
      */
-    public function manifest(string $previewUri): array
+    public function manifest(string $previewUri, string $nodePreviewUri): array
     {
         $viewports = [];
         foreach (array_filter($this->viewports) as $id => $viewport) {
@@ -73,6 +73,7 @@ class Protocol
             'viewports' => $viewports,
             'preview' => $previewUri . '?entry={entry}&site={site}',
             'gallery' => $previewUri . '?entries={entries}&site={site}',
+            'nodePreview' => $nodePreviewUri . '?ref={ref}&site={site}',
             'features' => ['grid' => array_filter($this->grid) !== [], 'colorScheme' => $this->colorScheme],
         ];
     }

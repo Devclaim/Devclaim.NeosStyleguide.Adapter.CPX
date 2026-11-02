@@ -52,3 +52,12 @@
     '@controller': 'Adapter'
     '@action': 'preview'
   httpMethods: ['GET']
+
+-
+  name: 'Styleguide adapter: node preview'
+  uriPattern: 'neos/styleguide/node'
+  defaults:
+    '@package': 'Devclaim.NeosStyleguide.Adapter.CPX'
+    '@controller': 'Adapter'
+    '@action': 'node'
+  httpMethods: ['GET']

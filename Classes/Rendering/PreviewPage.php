@@ -15,11 +15,19 @@ use Psr\Log\LoggerInterface;
 /**
  * The preview of the styleguide (PROTOCOL.md "Preview"): the entries in the stylesheets and scripts of the website
  * (setting preview), with the design tokens of the site; each entry in data-styleguide-entry, all in
- * data-styleguide-root. A plain page: the interface puts its draft tokens into it and measures it itself.
+ * data-styleguide-root. A plain page: the interface puts its draft tokens into it and measures it itself. The node
+ * previews (NodePreview) in the same page.
  */
 #[Flow\Scope('singleton')]
 class PreviewPage
 {
+    /** the note of a node preview without a node to show */
+    private const UNAVAILABLE = [
+        'de' => 'Die Website kann diesen Stand nicht für sich allein anzeigen, zum Beispiel weil das Element '
+            . 'gelöscht ist.',
+        'en' => 'The website cannot show this state on its own, for example because the element was deleted.',
+    ];
+
     #[Flow\Inject]
     protected ComponentFactory $componentFactory;
 
@@ -43,6 +51,36 @@ class PreviewPage
      */
     public function render(string $title, array $items, ?string $designTokens, string $language): string
     {
+        $body = '';
+        foreach ($items as $item) {
+            $body .= '<div data-styleguide-entry="' . Util::escapeAttributeValue($item['entry']->id) . '">'
+                . $this->renderEntry($item['entry'], $item['props'])
+                . '</div>';
+        }
+
+        return $this->page($title, '<div data-styleguide-root>' . $body . '</div>', $designTokens, $language);
+    }
+
+    /**
+     * A node preview (NodePreview): its HTML in the head of the website, inside data-styleguide-root; null: the note
+     * that there is nothing to show, marked data-node-preview-unavailable
+     */
+    public function renderNode(?string $html, ?string $designTokens, string $language): string
+    {
+        $root = $html === null
+            ? '<p data-styleguide-root data-node-preview-unavailable style="margin:0;padding:24px;text-align:center;'
+                . 'font:14px/1.5 system-ui,sans-serif;color:#6b6b6b">'
+                . htmlspecialchars(self::UNAVAILABLE[$language] ?? self::UNAVAILABLE['en']) . '</p>'
+            : '<div data-styleguide-root>' . $html . '</div>';
+
+        return $this->page('Node preview', $root, $designTokens, $language);
+    }
+
+    /**
+     * The page: the stylesheets and scripts of the website, the tokens of the site, the grid
+     */
+    private function page(string $title, string $root, ?string $designTokens, string $language): string
+    {
         $head = '';
         foreach (array_filter($this->settings['stylesheets'] ?? []) as $path) {
             $head .= '<link rel="stylesheet" href="' . Util::escapeAttributeValue($this->publicUri($path)) . '">';
@@ -54,18 +92,11 @@ class PreviewPage
         $head .= $this->theme->styleElement($designTokens);
         [$gridStyle, $grid] = $this->grid();
 
-        $body = '';
-        foreach ($items as $item) {
-            $body .= '<div data-styleguide-entry="' . Util::escapeAttributeValue($item['entry']->id) . '">'
-                . $this->renderEntry($item['entry'], $item['props'])
-                . '</div>';
-        }
-
         return '<!DOCTYPE html><html lang="' . Util::escapeAttributeValue($language) . '"><head>'
             . '<meta charset="UTF-8"><meta name="viewport" content="width=device-width">'
             . '<title>' . htmlspecialchars($title) . '</title>'
             . $head . $gridStyle
-            . '</head><body><div data-styleguide-root>' . $body . '</div>' . $grid . '</body></html>';
+            . '</head><body>' . $root . $grid . '</body></html>';
     }
 
     /**

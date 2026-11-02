@@ -8,6 +8,7 @@ use Devclaim\NeosStyleguide\Adapter\Cpx\Adapter\Protocol;
 use Devclaim\NeosStyleguide\Adapter\Cpx\Catalogue\Catalogue;
 use Devclaim\NeosStyleguide\Adapter\Cpx\Catalogue\Entry;
 use Devclaim\NeosStyleguide\Adapter\Cpx\Rendering\ComponentFactory;
+use Devclaim\NeosStyleguide\Adapter\Cpx\Rendering\NodePreview;
 use Devclaim\NeosStyleguide\Adapter\Cpx\Rendering\PreviewPage;
 use Devclaim\NeosStyleguide\Application\Sites;
 use Neos\Flow\Annotations as Flow;
@@ -16,7 +17,8 @@ use Neos\Flow\Security\Context as SecurityContext;
 
 /**
  * The adapter of the styleguide protocol (Devclaim.NeosStyleguide PROTOCOL.md) for CPX components, inside Neos: the
- * API under /neos/styleguide/api/v1 and the preview under /neos/styleguide/preview. For logged-in editors only (the
+ * API under /neos/styleguide/api/v1, the preview under /neos/styleguide/preview and the node previews under
+ * /neos/styleguide/node. For logged-in editors only (the
  * Neos backend session, Settings.yaml): 401 without one, the sites come from the editor's workspace.
  */
 class AdapterController extends ActionController
@@ -45,6 +47,9 @@ class AdapterController extends ActionController
     protected PreviewPage $previewPage;
 
     #[Flow\Inject]
+    protected NodePreview $nodePreview;
+
+    #[Flow\Inject]
     protected Sites $sites;
 
     protected function initializeAction(): void
@@ -59,8 +64,12 @@ class AdapterController extends ActionController
     public function manifestAction(): string
     {
         $previewUri = $this->uriBuilder->reset()->setCreateAbsoluteUri(false)->uriFor('preview');
+        $nodePreviewUri = $this->uriBuilder->reset()->setCreateAbsoluteUri(false)->uriFor('node');
 
-        return $this->json($this->protocol->manifest(strtok($previewUri, '?') ?: $previewUri));
+        return $this->json($this->protocol->manifest(
+            strtok($previewUri, '?') ?: $previewUri,
+            strtok($nodePreviewUri, '?') ?: $nodePreviewUri
+        ));
     }
 
     public function entriesAction(): string
@@ -136,6 +145,22 @@ class AdapterController extends ActionController
         return $this->previewPage->render(
             title: $gallery ? 'Styleguide' : $found[0]->title,
             items: $items,
+            designTokens: $selected['designTokens'] ?? null,
+            language: ($selected['languages'][0]['code'] ?? '') ?: 'de',
+        );
+    }
+
+    /**
+     * A node preview (PROTOCOL.md, "Node previews"): the node of the reference as its page renders it, in the theme of
+     * the site; a note when there is none to show (the resolver of the reference decides who may see it)
+     */
+    public function nodeAction(string $ref = '', ?string $site = null): string
+    {
+        $selected = $this->sites->pick($site);
+        $this->response->setContentType('text/html');
+
+        return $this->previewPage->renderNode(
+            html: $ref === '' ? null : $this->nodePreview->render($ref, $this->request),
             designTokens: $selected['designTokens'] ?? null,
             language: ($selected['languages'][0]['code'] ?? '') ?: 'de',
         );

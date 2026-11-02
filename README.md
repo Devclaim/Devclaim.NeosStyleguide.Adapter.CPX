@@ -9,6 +9,9 @@ Sitegeist.Monocle; the design tokens are the `@theme` blocks of the site's style
     and variants), validation of token overrides
 - the preview and the gallery under `/neos/styleguide/preview`, in the stylesheets and scripts of the website and the
     tokens of the selected site, with the page grid
+- the node previews under `/neos/styleguide/node` (`nodePreview` in the manifest): a node in a certain state, e.g. a
+    change of the activity log before and after (`Devclaim.NeosActivity`), rendered by its content renderer as on its
+    page; the node references are resolved by the core (`NodeReferences`), which decides who may see them
 - for logged-in editors only (the Neos backend session), `401` without one
 
 ## Installation

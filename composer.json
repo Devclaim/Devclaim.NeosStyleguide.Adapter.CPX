@@ -6,6 +6,7 @@
 	"require": {
 		"devclaim/neos-styleguide": "*",
 		"packagefactory/component-engine": "*",
+		"packagefactory/neos-component-engine": "*",
 		"neos/neos": "^9.2",
 		"symfony/yaml": "*"
 	},
